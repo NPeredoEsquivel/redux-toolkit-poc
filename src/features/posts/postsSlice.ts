@@ -5,9 +5,21 @@ import { sub } from 'date-fns'
 import { userLoggedOut } from '../auth/authSlice';
 import { error } from 'console';
 
+import { client } from '../../api/client';
+import { createAppAsyncThunk } from '../../app/withTypes'
+
+
+//Accepts two arguments:
+//1. A string that will be used as the prefix for the generated action types
+//2. A function that returns a Promise containing the data you want to fetch
+export const fetchPosts = createAppAsyncThunk('posts/fetchPosts', async () => {
+  const response = await client.get<Post[]>('fakeApi/posts')
+  return response.data
+})
+
 interface PostsState {
   posts: Post[]
-  status: 'idle' | 'loading' | 'succeeded' | 'failed'
+  status: 'idle' | 'pending' | 'loading' | 'succeeded' | 'failed'
   error: string | null
 }
 
@@ -86,9 +98,21 @@ const postsSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(userLoggedOut, (state) => {
-      return initialState
-    })
+    builder
+      .addCase(userLoggedOut, (state) => {
+        return initialState
+      })
+      .addCase(fetchPosts.pending, (state, action) => {
+        state.status = 'pending'
+      })
+      .addCase(fetchPosts.fulfilled, (state, action) => {
+        state.status = 'succeeded'
+        return { ...state, posts: state.posts.concat(action.payload) }
+      })
+      .addCase(fetchPosts.rejected, (state, action) => {
+        state.status = 'failed'
+        state.error = action.error.message ?? 'Unknown'
+      })
   }
 })
 
