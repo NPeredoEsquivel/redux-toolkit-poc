@@ -12,10 +12,20 @@ import { createAppAsyncThunk } from '../../app/withTypes'
 //Accepts two arguments:
 //1. A string that will be used as the prefix for the generated action types
 //2. A function that returns a Promise containing the data you want to fetch
-export const fetchPosts = createAppAsyncThunk('posts/fetchPosts', async () => {
-  const response = await client.get<Post[]>('fakeApi/posts')
-  return response.data
-})
+export const fetchPosts = createAppAsyncThunk('posts/fetchPosts',
+  async () => {
+    const response = await client.get<Post[]>('fakeApi/posts')
+    return response.data
+  },
+  {
+    condition(arg, thunkApi) {
+      const postsStatus = selectPostsStatus(thunkApi.getState())
+      if (postsStatus !== 'idle') {
+        return false
+      }
+    }
+  }
+)
 
 interface PostsState {
   posts: Post[]
@@ -107,7 +117,7 @@ const postsSlice = createSlice({
       })
       .addCase(fetchPosts.fulfilled, (state, action) => {
         state.status = 'succeeded'
-        return { ...state, posts: state.posts.concat(action.payload) }
+        state.posts = [...state.posts, ...action.payload];
       })
       .addCase(fetchPosts.rejected, (state, action) => {
         state.status = 'failed'
