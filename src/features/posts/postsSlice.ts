@@ -56,38 +56,20 @@ export interface Reactions {
 
 export type ReactionName = keyof Reactions
 
-const initialReactions: Reactions = {
-  thumbsUp: 0,
-  tada: 0,
-  heart: 0,
-  rocket: 0,
-  eyes: 0
-}
-
 type PostUpdate = Pick<Post, 'id' | 'title' | 'content'>
+type NewPost = Pick<Post, 'title' | 'content' | 'user'>
+
+export const addNewPost = createAppAsyncThunk('posts/addNewPost',
+  async (initialPost: NewPost) => {
+    const response = await client.post<Post>('fakeApi/posts', initialPost)
+    return response.data
+  }
+)
 
 const postsSlice = createSlice({
   name: 'posts',
   initialState,
   reducers: {
-    postAdded: {
-      reducer(state, action: PayloadAction<Post>) {
-        const newPosts = [...state.posts, action.payload]
-        return { ...state, posts: newPosts }
-      },
-      prepare(title: string, content: string, userId: string) {
-        return {
-          payload: {
-            id: nanoid(),
-            title,
-            content,
-            user: userId,
-            date: new Date().toISOString(),
-            reactions: { ...initialReactions },
-          },
-        }
-      }
-    },
     postUpdated(state, action: PayloadAction<PostUpdate>) {
       const { id, title, content } = action.payload
       const posts = state.posts
@@ -121,10 +103,13 @@ const postsSlice = createSlice({
         state.status = 'failed'
         state.error = action.error.message ?? 'Unknown'
       })
+      .addCase(addNewPost.fulfilled, (state, action) => {
+        state.posts = [...state.posts, action.payload]
+      })
   }
 })
 
-export const { postAdded, postUpdated, reactionAdded } = postsSlice.actions
+export const { postUpdated, reactionAdded } = postsSlice.actions
 
 export default postsSlice.reducer
 
