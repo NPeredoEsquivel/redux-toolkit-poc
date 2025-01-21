@@ -1,9 +1,7 @@
 import { createSlice, PayloadAction, nanoid } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
-import { sub } from 'date-fns'
 
 import { userLoggedOut } from '../auth/authSlice';
-import { error } from 'console';
 
 import { client } from '../../api/client';
 import { createAppAsyncThunk } from '../../app/withTypes'
