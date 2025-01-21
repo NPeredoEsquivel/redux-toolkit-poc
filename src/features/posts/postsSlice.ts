@@ -3,6 +3,19 @@ import { RootState } from '../../app/store';
 import { sub } from 'date-fns'
 
 import { userLoggedOut } from '../auth/authSlice';
+import { error } from 'console';
+
+interface PostsState {
+  posts: Post[]
+  status: 'idle' | 'loading' | 'succeeded' | 'failed'
+  error: string | null
+}
+
+const initialState: PostsState = {
+  posts: [],
+  status: 'idle',
+  error: null
+}
 
 export interface Post {
   id: string
@@ -33,18 +46,14 @@ const initialReactions: Reactions = {
 
 type PostUpdate = Pick<Post, 'id' | 'title' | 'content'>
 
-const initialState: Post[] = [
-  { id: '1', title: 'First Post!', content: 'Hello!', user: '0', date: sub(new Date(), { minutes: 10 }).toISOString(), reactions: initialReactions },
-  { id: '2', title: 'Second Post', content: 'More text', user: '1', date: sub(new Date(), { minutes: 5 }).toISOString(), reactions: initialReactions },
-]
-
 const postsSlice = createSlice({
   name: 'posts',
   initialState,
   reducers: {
     postAdded: {
       reducer(state, action: PayloadAction<Post>) {
-        return [...state, action.payload]
+        const newPosts = [...state.posts, action.payload]
+        return { ...state, posts: newPosts }
       },
       prepare(title: string, content: string, userId: string) {
         return {
@@ -61,21 +70,24 @@ const postsSlice = createSlice({
     },
     postUpdated(state, action: PayloadAction<PostUpdate>) {
       const { id, title, content } = action.payload
-      return state.map(post => (post.id === id ? { ...post, title, content } : post))
+      const posts = state.posts
+      const updatedPosts = posts.map(post => (post.id === id ? { ...post, title, content } : post))
+      return { ...state, updatedPosts }
     },
     reactionAdded(
       state,
       action: PayloadAction<{ postId: string; reaction: ReactionName }>
     ) {
       const { postId, reaction } = action.payload
-      return state.map(post =>
+      const updatedPosts = state.posts.map(post =>
         post.id === postId ? { ...post, reactions: { ...post.reactions, [reaction]: post.reactions[reaction] + 1 } } : post
       )
+      return { ...state, posts: updatedPosts }
     },
   },
   extraReducers: (builder) => {
     builder.addCase(userLoggedOut, (state) => {
-      return []
+      return initialState
     })
   }
 })
@@ -84,6 +96,8 @@ export const { postAdded, postUpdated, reactionAdded } = postsSlice.actions
 
 export default postsSlice.reducer
 
-export const selectAllPosts = (state: RootState) => state.posts
+export const selectAllPosts = (state: RootState) => state.posts.posts
 export const selectPostById = (state: RootState, postId: string) =>
-  state.posts.find(post => post.id === postId)
+  state.posts.posts.find(post => post.id === postId)
+export const selectPostsStatus = (state: RootState) => state.posts.status
+export const selectPostsError = (state: RootState) => state.posts.error
