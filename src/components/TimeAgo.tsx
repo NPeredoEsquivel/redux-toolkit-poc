@@ -4,7 +4,7 @@ type TTimeAgoProps = {
   timestamp: string
 }
 
-const TimeAgo = ({ timestamp }: TTimeAgoProps) => {
+export const TimeAgo = ({ timestamp }: TTimeAgoProps) => {
   let timeAgo = ''
   if (timestamp) {
     const date = parseISO(timestamp)
@@ -18,5 +18,3 @@ const TimeAgo = ({ timestamp }: TTimeAgoProps) => {
     </time>
   )
 }
-
-export default TimeAgo

@@ -5,7 +5,7 @@ import { selectPostById } from './postsSlice'
 import { selectCurrentUser } from '../users/usersSlice'
 
 import PostAuthor from './PostAuthor'
-import TimeAgo from '@/components/TimeAgo'
+import { TimeAgo } from '@/components/TimeAgo'
 import ReactionButtons from './ReactionButtons'
 
 const SinglePostPage = () => {

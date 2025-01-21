@@ -29,7 +29,7 @@ export const fetchPosts = createAppAsyncThunk('posts/fetchPosts',
 
 interface PostsState {
   posts: Post[]
-  status: 'idle' | 'pending' | 'loading' | 'succeeded' | 'failed'
+  status: 'idle' | 'pending' | 'succeeded' | 'failed'
   error: string | null
 }
 
