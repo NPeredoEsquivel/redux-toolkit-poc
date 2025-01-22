@@ -10,7 +10,7 @@ interface AuthState {
 
 export const login = createAppAsyncThunk('auth/login',
   async (username: string) => {
-    await client.post('/fakeApi/authenticate', { username })
+    await client.post('/fakeApi/login', { username })
     return username
   }
 )
