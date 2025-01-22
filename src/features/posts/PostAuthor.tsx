@@ -4,13 +4,17 @@ import { selectUserById } from '../users/usersSlice'
 
 type TPostAuthorProps = {
   userId: string
+  showPrefix?: boolean
 }
 
-const PostAuthor = ({ userId }: TPostAuthorProps) => {
+const PostAuthor = ({ userId, showPrefix = true }: TPostAuthorProps) => {
   const author = useAppSelector(state => selectUserById(state, userId))
 
   return (
-    <span>by {author ? author.name : 'Unknown author'}</span>
+    <span>
+      {showPrefix ? 'by ' : null}
+      {author?.name ?? 'Unknown author'}
+    </span>
   )
 }
 
