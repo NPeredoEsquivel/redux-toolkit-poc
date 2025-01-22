@@ -10,7 +10,6 @@ import React from 'react'
 export const Navbar = () => {
   const dispatch = useAppDispatch()
   const user = useAppSelector(selectCurrentUser)
-  console.log("🚀 ~ Navbar ~ user:", user)
 
   const isLoggedIn = !!user
 
