@@ -12,6 +12,11 @@ export interface ServerNotification {
   user: string;
 }
 
+export interface ClientNotification extends ServerNotification {
+  read: boolean;
+  isNew: boolean;
+}
+
 export const fetchNotifications = createAppAsyncThunk<ServerNotification[]>(
   'notifications/fetchNotifications',
   async (_unused, thunkApi) => {
@@ -24,15 +29,32 @@ export const fetchNotifications = createAppAsyncThunk<ServerNotification[]>(
 
 )
 
-const initialState: ServerNotification[] = []
+const initialState: ClientNotification[] = []
 
 const notificationSlice = createSlice({
   name: 'notifications',
   initialState,
-  reducers: {},
+  reducers: {
+    allNotificationRead(state) {
+      state.forEach(notification =>
+        notification.read = true
+      )
+    }
+  },
   extraReducers: builder => {
     builder.addCase(fetchNotifications.fulfilled, (state, action) => {
-      state.push(...action.payload)
+      const notificationWithMetadata: ClientNotification[] =
+        action.payload.map(notification => ({
+          ...notification,
+          read: false,
+          isNew: true
+        }))
+      state.forEach(notification => {
+        // Mark any existing notifications as not new
+        notification.isNew = !notification.read
+      })
+
+      state.push(...notificationWithMetadata)
       // Sort with newest first
       state.sort((a, b) => b.date.localeCompare(a.date))
     })
@@ -41,4 +63,14 @@ const notificationSlice = createSlice({
 
 export default notificationSlice.reducer
 
+export const { allNotificationRead } = notificationSlice.actions
+
 export const selectAllNotifications = (state: RootState) => state.notifications
+export const selectUnreadNotificationsCount = (state: RootState) => {
+  const allNotifications = selectAllNotifications(state)
+  const unreadNotifications = allNotifications.filter(
+    notification => !notification.read
+  )
+
+  return unreadNotifications.length
+}
