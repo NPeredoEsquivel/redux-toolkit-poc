@@ -29,7 +29,7 @@ export const Navbar = () => {
     navContent = (
       <div className="navContent">
         <div className="navLinks">
-          <Link to="/">Posts</Link>
+          <Link to="/posts">Posts</Link>
           <Link to="/users">Users</Link><Link to="/notifications">Notifications</Link>
           <button className="button small" onClick={fetchNewNotifications}>
             Refresh Notifications
