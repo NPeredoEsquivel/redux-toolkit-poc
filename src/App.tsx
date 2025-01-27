@@ -19,12 +19,12 @@ import UserPage from './features/users/UserPage'
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const username = useAppSelector(selectCurrentUsername)
-
-  return username ? (
-    <>{children}</>
-  ) : (
-    <Navigate to="/" replace />
-  )
+  
+  if (!username) {
+    return <Navigate to="/" replace />
+  }
+  
+  return children
 }
 
 function App() {
@@ -42,8 +42,8 @@ function App() {
                   <Route path="/posts" element={<PostsMainPage />}></Route>
                   <Route path="/posts/:postId" element={<SinglePostPage />} />
                   <Route path="/editPost/:postId" element={<EditPostForm />} />
-                  <Route path="users" element={<UserList />} />
-                  <Route path="users/:userId" element={<UserPage />} />
+                  <Route path="/users" element={<UserList />} />
+                  <Route path="/users/:userId" element={<UserPage />} />
                   <Route path="/notifications" element={<NotificationsList />} />
                 </Routes>
               </ProtectedRoute>
