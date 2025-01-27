@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../app/hooks'
 import { logout } from '../features/auth/authSlice'
 import { selectCurrentUser } from '../features/users/usersSlice'
-import { fetchNotifications } from '@/features/notifications/notificationsSlice'
+import { fetchNotifications, selectUnreadNotificationsCount } from '@/features/notifications/notificationsSlice'
 
 import { UserIcon } from './UserIcon'
 import React from 'react'
@@ -11,26 +11,34 @@ import React from 'react'
 export const Navbar = () => {
   const dispatch = useAppDispatch()
   const user = useAppSelector(selectCurrentUser)
+  const numberUnreadNotifications = useAppSelector(selectUnreadNotificationsCount)
 
   const isLoggedIn = !!user
 
   let navContent: React.ReactNode = null
 
-  const fetchNewNotifications = () => {
-    dispatch(fetchNotifications())
-  }
-
+  
   if (isLoggedIn) {
     const onLogoutClicked = () => {
       dispatch(logout())
     }
-    console.log("🚀 0~ Navbar ~ isLoggedIn:", isLoggedIn)
+
+    const fetchNewNotifications = () => {
+      dispatch(fetchNotifications())
+    }
+
+    let unreadNotificationsBadge: React.ReactNode | undefined
+
+    if (numberUnreadNotifications > 0) {
+      unreadNotificationsBadge = <span className="badge">{numberUnreadNotifications}</span>
+    }
 
     navContent = (
       <div className="navContent">
         <div className="navLinks">
           <Link to="/posts">Posts</Link>
-          <Link to="/users">Users</Link><Link to="/notifications">Notifications</Link>
+          <Link to="/users">Users</Link>
+          <Link to="/notifications">Notifications {unreadNotificationsBadge}</Link>
           <button className="button small" onClick={fetchNewNotifications}>
             Refresh Notifications
           </button>
