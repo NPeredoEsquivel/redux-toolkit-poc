@@ -1,10 +1,11 @@
-import { createSlice, PayloadAction, nanoid } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction, createSelector } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
 
 import { logout } from '../auth/authSlice';
 
 import { client } from '../../api/client';
 import { createAppAsyncThunk } from '../../app/withTypes'
+import { userInfo } from 'os';
 
 
 //Accepts two arguments:
@@ -117,9 +118,13 @@ export const selectAllPosts = (state: RootState) => state.posts.posts
 export const selectPostById = (state: RootState, postId: string) =>
   state.posts.posts.find(post => post.id === postId)
 //This is actually a broken pattern!
-export const selectPostsByUserId = (state: RootState, userId: string) => {
-  const allPosts = selectAllPosts(state)
-  return allPosts.filter(post => post.user === userId)
-}
+export const selectPostsByUserId = createSelector(
+  [
+    selectAllPosts,
+    (state: RootState, userId: string) => userId
+  ],
+  (posts, userId) => posts.filter(post => post.user === userId)
+)
+
 export const selectPostsStatus = (state: RootState) => state.posts.status
 export const selectPostsError = (state: RootState) => state.posts.error
