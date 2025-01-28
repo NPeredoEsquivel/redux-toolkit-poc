@@ -5,14 +5,22 @@ import PostAuthor from './PostAuthor'
 import { TimeAgo } from '@/components/TimeAgo'
 import { Spinner } from '@/components/Spinner'
 import ReactionButtons from './ReactionButtons'
-import { Post, fetchPosts, selectAllPosts, selectPostsStatus, selectPostsError } from './postsSlice'
+import { 
+  fetchPosts,
+  selectPostById,
+  selectPostIds,
+  selectPostsStatus,
+  selectPostsError
+} from './postsSlice'
 
 
 type TPostExceprtProps = {
-  post: Post
+  postId: string
 }
 
-function PostExceprt({ post }: TPostExceprtProps) {
+function PostExceprt({ postId }: TPostExceprtProps) {
+  const post = useAppSelector(state => selectPostById(state, postId))
+
   return (
     <article className="post-excerpt" key={post.id}>
       <h3>
@@ -29,7 +37,7 @@ function PostExceprt({ post }: TPostExceprtProps) {
 }
 
 const PostList = () => {
-  const posts = useAppSelector(selectAllPosts)
+  const orderedPostIds = useAppSelector(selectPostIds)
   const dispatch = useAppDispatch()
   const postStatus = useAppSelector(selectPostsStatus)
   const postsError = useAppSelector(selectPostsError)
@@ -45,9 +53,8 @@ const PostList = () => {
   if (postStatus === 'pending') {
     content = <Spinner text="Loading..." />
   } else if (postStatus === 'succeeded') {
-    const orderedPosts = posts.slice().sort((a, b) => b.date.localeCompare(a.date))
-    content = orderedPosts.map(post => (
-      <PostExceprt key={post.id} post={post} />
+    content = orderedPostIds.map(postId => (
+      <PostExceprt key={postId} postId={postId} />
     ))
   } else if (postStatus === 'failed') {
     content = <div>{postsError}</div>
