@@ -5,7 +5,6 @@ import { logout } from '../auth/authSlice';
 
 import { client } from '../../api/client';
 import { createAppAsyncThunk } from '../../app/withTypes'
-import { userInfo } from 'os';
 
 
 //Accepts two arguments:
