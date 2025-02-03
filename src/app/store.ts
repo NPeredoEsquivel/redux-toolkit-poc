@@ -1,9 +1,9 @@
 import { configureStore } from '@reduxjs/toolkit';
 
-import postReducer from '../features/posts/postsSlice';
-import userReducer from '../features/users/usersSlice';
-import authReducer from '../features/auth/authSlice';
-import notificationsReducer from '../features/notifications/notificationsSlice';
+import postReducer from '@/features/posts/postsSlice';
+import userReducer from '@/features/users/usersSlice';
+import authReducer from '@/features/auth/authSlice';
+import notificationsReducer from '@/features/notifications/notificationsSlice';
 import { apiSlice } from '@/features/api/apiSlice';
 
 import { listenerMiddleware } from './listenerMiddleware';
