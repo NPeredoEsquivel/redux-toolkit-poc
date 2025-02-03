@@ -4,6 +4,7 @@ import postReducer from '../features/posts/postsSlice';
 import userReducer from '../features/users/usersSlice';
 import authReducer from '../features/auth/authSlice';
 import notificationsReducer from '../features/notifications/notificationsSlice';
+import { apiSlice } from '@/features/api/apiSlice';
 
 import { listenerMiddleware } from './listenerMiddleware';
 
@@ -13,8 +14,12 @@ export const store = configureStore({
     users: userReducer,
     auth: authReducer,
     notifications: notificationsReducer,
+    [apiSlice.reducerPath]: apiSlice.reducer
   },
-  middleware: getDefaultMiddleware => getDefaultMiddleware().prepend(listenerMiddleware.middleware),
+  middleware: getDefaultMiddleware => 
+    getDefaultMiddleware()
+      .prepend(listenerMiddleware.middleware)
+      .concat(apiSlice.middleware)
 });
 
 export type AppStore = typeof store;
