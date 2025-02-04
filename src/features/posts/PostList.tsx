@@ -1,26 +1,17 @@
-import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { useAppSelector, useAppDispatch } from '../../app/hooks'
 import PostAuthor from './PostAuthor'
 import { TimeAgo } from '@/components/TimeAgo'
 import { Spinner } from '@/components/Spinner'
 import ReactionButtons from './ReactionButtons'
-import { 
-  fetchPosts,
-  selectPostById,
-  selectPostIds,
-  selectPostsStatus,
-  selectPostsError
-} from './postsSlice'
+
+import { useGetPostsQuery, Post } from '@/features/api/apiSlice'
 
 
 type TPostExceprtProps = {
-  postId: string
+  post: Post
 }
 
-function PostExceprt({ postId }: TPostExceprtProps) {
-  const post = useAppSelector(state => selectPostById(state, postId))
-
+function PostExceprt({ post }: TPostExceprtProps) {
   return (
     <article className="post-excerpt" key={post.id}>
       <h3>
@@ -37,27 +28,25 @@ function PostExceprt({ postId }: TPostExceprtProps) {
 }
 
 const PostList = () => {
-  const orderedPostIds = useAppSelector(selectPostIds)
-  const dispatch = useAppDispatch()
-  const postStatus = useAppSelector(selectPostsStatus)
-  const postsError = useAppSelector(selectPostsError)
-
-  useEffect(() => {
-    if (postStatus === 'idle') {
-      dispatch(fetchPosts())
-    }
-  }, [postStatus, dispatch])
+  //Calling the useGetPostsQuery hook automatically fetches the data.
+  const {
+    data: posts = [],
+    isLoading,
+    isSuccess,
+    isError,
+    error,
+  } = useGetPostsQuery()
 
   let content: React.ReactNode
-
-  if (postStatus === 'pending') {
+  
+  if (isLoading) {
     content = <Spinner text="Loading..." />
-  } else if (postStatus === 'succeeded') {
-    content = orderedPostIds.map(postId => (
-      <PostExceprt key={postId} postId={postId} />
+  } else if (isSuccess) {
+    content = posts.map(post => (
+      <PostExceprt key={post.id} post={post} />
     ))
-  } else if (postStatus === 'failed') {
-    content = <div>{postsError}</div>
+  } else if (isError) {
+    content = <div>{error.toString()}</div>
   }
 
   return (
