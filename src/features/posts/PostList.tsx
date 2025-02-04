@@ -5,6 +5,7 @@ import { Spinner } from '@/components/Spinner'
 import ReactionButtons from './ReactionButtons'
 
 import { useGetPostsQuery, Post } from '@/features/api/apiSlice'
+import { useMemo } from 'react'
 
 
 type TPostExceprtProps = {
@@ -37,12 +38,19 @@ const PostList = () => {
     error,
   } = useGetPostsQuery()
 
+  const sortedPosts = useMemo(() => {
+    const sortedPosts = posts.slice()
+
+    sortedPosts.sort((a,b) => b.date.localeCompare(a.date))
+    return sortedPosts
+  }, [posts])
+
   let content: React.ReactNode
   
   if (isLoading) {
     content = <Spinner text="Loading..." />
   } else if (isSuccess) {
-    content = posts.map(post => (
+    content = sortedPosts.map(post => (
       <PostExceprt key={post.id} post={post} />
     ))
   } else if (isError) {
