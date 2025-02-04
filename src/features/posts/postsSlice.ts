@@ -27,7 +27,7 @@ export const fetchPosts = createAppAsyncThunk('posts/fetchPosts',
 )
 
 interface PostsState extends EntityState<Post, string> {
-  status: 'idle' | 'pending' | 'succeeded' | 'failed'
+  status: 'idle' | 'pending' | 'succeeded' | 'rejected'
   error: string | null
 }
 
@@ -102,12 +102,12 @@ const postsSlice = createSlice({
         postAdapter.setAll(state, action.payload)
       })
       .addCase(fetchPosts.rejected, (state, action) => {
-        state.status = 'failed'
+        state.status = 'rejected'
         state.error = action.error.message ?? 'Unknown'
       })
       .addCase(addNewPost.fulfilled, postAdapter.addOne)
-  }
-})
+    }
+  })
 
 export const { postUpdated, reactionAdded } = postsSlice.actions
 
