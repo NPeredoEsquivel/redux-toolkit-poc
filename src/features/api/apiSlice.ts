@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react'
 
-import type { Post } from '../posts/postsSlice'
+import type { Post, NewPost } from '@/features/posts/postsSlice'
 export type { Post }
 
 export const apiSlice = createApi({
@@ -14,6 +14,14 @@ export const apiSlice = createApi({
     }),
     getPost: builder.query<Post, string>({
       query: postId => `posts/${postId}`
+    }),
+    addNewPost: builder.mutation<Post, NewPost>({
+      query: initialPost => ({
+        //The HTTP URL will be 'fakeApi/posts'
+        url: '/posts',
+        method: 'POST',
+        body: initialPost,
+      })
     })
   })
 })
