@@ -60,7 +60,7 @@ export interface Reactions {
 export type ReactionName = keyof Reactions
 
 type PostUpdate = Pick<Post, 'id' | 'title' | 'content'>
-type NewPost = Pick<Post, 'title' | 'content' | 'user'>
+export type NewPost = Pick<Post, 'title' | 'content' | 'user'>
 
 export const addNewPost = createAppAsyncThunk('posts/addNewPost',
   async (initialPost: NewPost) => {
