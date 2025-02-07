@@ -5,7 +5,7 @@ export type { Post }
 
 export const apiSlice = createApi({
   reducerPath: 'api',
-  //All of the URLs will start with fakeApi.
+  //All of the URLs will start with fakeApi. This also helps the body to be JSON-serialized.
   baseQuery: fetchBaseQuery({ baseUrl: '/fakeApi' }),
   //operations and requests for this server.
   endpoints: builder => ({
