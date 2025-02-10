@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react'
 
 import type { Post, NewPost, PostUpdate } from '@/features/posts/postsSlice'
+import { argv } from 'process'
 export type { Post }
 
 export const apiSlice = createApi({
@@ -12,10 +13,14 @@ export const apiSlice = createApi({
   endpoints: builder => ({
     getPosts: builder.query<Post[], void>({
       query: () => '/posts',
-      providesTags: ['Post'],
+      providesTags: (result = [], error, arg) => [
+        'Post',
+        ...result.map(({ id }) => ({ type: 'Post', id}) as const)
+      ],
     }),
     getPost: builder.query<Post, string>({
-      query: postId => `posts/${postId}`
+      query: postId => `posts/${postId}`,
+      providesTags: (result, error, postId) => [{ type: 'Post', id: postId }]
     }),
     addNewPost: builder.mutation<Post, NewPost>({
       query: initialPost => ({
@@ -32,6 +37,7 @@ export const apiSlice = createApi({
         method: 'PATCH',
         body: post,
       }),
+      invalidatesTags: (result, error, { id }) => [{ type: 'Post', id }]
     }),
   })
 })
