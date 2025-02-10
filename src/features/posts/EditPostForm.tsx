@@ -36,7 +36,7 @@ const EditPostForm = () => {
     const content = elements.postContent.value
 
     if (title && content) {
-      await updatePost({ ...post, title, content })
+      await updatePost({ id: post.id, title, content })
       navigate(`/posts/${postId}`)
     }
   }
