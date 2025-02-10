@@ -6,6 +6,7 @@ import { logout } from '../auth/authSlice';
 
 import { client } from '../../api/client';
 import { createAppAsyncThunk } from '../../app/withTypes'
+import { apiSlice } from '@/features/api/apiSlice';
 
 
 //Accepts two arguments:
@@ -133,7 +134,7 @@ export const selectPostsError = (state: RootState) => state.posts.error
 export const addPostListener = (startAppListening: AppStartListening) => {
   startAppListening(
     {
-      actionCreator: addNewPost.fulfilled,
+      matcher: apiSlice.endpoints.addNewPost.matchFulfilled,
       effect: async (action, listenerApi) => {
         const { toast } = await import('react-tiny-toast')
 
