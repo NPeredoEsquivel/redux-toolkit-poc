@@ -1,7 +1,6 @@
 import React from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
-import { postUpdated, selectPostById } from '@/features/posts/postsSlice'
 import { useGetPostQuery, useEditPostMutation } from '@/features/api/apiSlice'
 
 interface EditPostFormFields extends HTMLFormControlsCollection {
