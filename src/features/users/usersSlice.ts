@@ -12,26 +12,26 @@ export interface User {
   name: string
 }
 
-export const fetchUsers = createAppAsyncThunk('users/fetchUsers',
+/* export const fetchUsers = createAppAsyncThunk('users/fetchUsers',
   async () => {
     const response = await client.get<User[]>('fakeApi/users')
     return response.data
   }
-)
+) */
 
 const usersAdapter = createEntityAdapter<User>()
 
 const initialState = usersAdapter.getInitialState()
 
 
-const usersSlice = createSlice({
+/* const usersSlice = createSlice({
   name: 'users',
   initialState,
   reducers: {},
   extraReducers: builder => {
     builder.addCase(fetchUsers.fulfilled, usersAdapter.setAll)
   }
-})
+}) */
 
 const emptyUsers: User[] = []
 
@@ -52,8 +52,8 @@ export const selectUserById = createSelector(
   (users, userId) => users.find(user => user.id === userId)
 )
 
-export const { } = usersSlice.actions
-export default usersSlice.reducer
+/* export const { } = usersSlice.actions
+export default usersSlice.reducer */
 
 
 /* export const { selectAll: selectAllUsers, selectById: selectUserById  } = usersAdapter.getSelectors((state: RootState) => state.users) */
