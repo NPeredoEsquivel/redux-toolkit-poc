@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react'
 
-import type { Post, NewPost, PostUpdate } from '@/features/posts/postsSlice'
-import { argv } from 'process'
+import type { Post, NewPost, PostUpdate, ReactionName } from '@/features/posts/postsSlice'
+import type { User } from '@/features/users/usersSlice'
 export type { Post }
 
 export const apiSlice = createApi({
@@ -39,12 +39,28 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: (result, error, { id }) => [{ type: 'Post', id }]
     }),
+    getUsers: builder.query<User[], void>({
+      query: () => '/users'
+    }),
+    /* updateReaction: builder.mutation<Post, { postId: string, reaction: ReactionName }>({
+      query: ({postId, reaction}) => ({
+        url: `posts/${postId}/reactions`,
+        method: 'PATCH',
+        body: { reaction },
+      }),
+      invalidatesTags: (result, error, arg) => [
+        { type: 'Post', id: arg.postId }
+      ]
+    }) */
   })
 })
+console.log("🚀 ~ apiSlice:", apiSlice)
 
 export const { 
   useGetPostsQuery,
   useGetPostQuery,
+  useGetUsersQuery,
   useAddNewPostMutation,
   useEditPostMutation,
+  /* useUpdateReactionMutation */
 } = apiSlice
