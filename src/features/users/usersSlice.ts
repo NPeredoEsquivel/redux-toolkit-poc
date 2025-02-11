@@ -19,6 +19,16 @@ export interface User {
   }
 ) */
 
+export const apiSliceWithUsers = apiSlice.injectEndpoints({
+  endpoints: builder => ({
+    getUsers: builder.query<User[], void>({
+      query: () => '/users'
+    })
+  })
+})
+
+export const { useGetUsersQuery } = apiSliceWithUsers
+
 const usersAdapter = createEntityAdapter<User>()
 
 const initialState = usersAdapter.getInitialState()
@@ -30,8 +40,8 @@ const initialState = usersAdapter.getInitialState()
   reducers: {},
   extraReducers: builder => {
     builder.addCase(fetchUsers.fulfilled, usersAdapter.setAll)
-  }
-}) */
+    }
+    }) */
 
 const emptyUsers: User[] = []
 
@@ -39,7 +49,10 @@ const emptyUsers: User[] = []
 //This generates a new selector that will return the query result object for a query with those parameters.
 //To generate a selector for a specific query argument, call 'select(theQueryArg)`.
 //In this case, the users query has no params, so we don't pass anything to select().
-export const selectUsersResult = apiSlice.endpoints.getUsers.select()
+//export const selectUsersResult = apiSlice.endpoints.getUsers.select()
+
+//This is the new variable from the mutated apiSlice.
+export const selectUsersResult = apiSliceWithUsers.endpoints.getUsers.select()
 
 export const selectAllUsers = createSelector(
   selectUsersResult,

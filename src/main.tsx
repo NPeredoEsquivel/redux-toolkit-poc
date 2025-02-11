@@ -9,14 +9,14 @@ import { worker } from './api/server'
 
 import './primitiveui.css'
 import './index.css'
-import { apiSlice } from '@/features/api/apiSlice'
+import { apiSliceWithUsers } from '@/features/users/usersSlice'
 
 // Wrap app rendering so we can wait for the mock API to initialize
 async function start() {
   // Start our mock API server
   await worker.start({ onUnhandledRequest: 'bypass' })
 
-  store.dispatch(apiSlice.endpoints.getUsers.initiate())
+  store.dispatch(apiSliceWithUsers.endpoints.getUsers.initiate())
 
   const root = createRoot(document.getElementById('root')!)
 
