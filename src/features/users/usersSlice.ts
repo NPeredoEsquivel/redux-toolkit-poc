@@ -1,10 +1,7 @@
-import { createSlice, createEntityAdapter, createSelector } from '@reduxjs/toolkit';
+import { createEntityAdapter, createSelector, EntityState } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
 import { selectCurrentUsername } from '../auth/authSlice';
 
-import { client } from '@/api/client';
-
-import { createAppAsyncThunk } from '@/app/withTypes';
 import { apiSlice } from '@/features/api/apiSlice';
 
 export interface User {
@@ -19,19 +16,24 @@ export interface User {
   }
 ) */
 
+const usersAdapter = createEntityAdapter<User>()
+const initialState = usersAdapter.getInitialState()
+
+
+
 export const apiSliceWithUsers = apiSlice.injectEndpoints({
   endpoints: builder => ({
-    getUsers: builder.query<User[], void>({
-      query: () => '/users'
+    getUsers: builder.query<EntityState<User, string>, void>({
+      query: () => '/users',
+      transformResponse(res: User[]) {
+        //Create a normalized state object containing all the user items.
+        return usersAdapter.setAll(initialState, res)
+      }
     })
   })
 })
 
 export const { useGetUsersQuery } = apiSliceWithUsers
-
-const usersAdapter = createEntityAdapter<User>()
-
-const initialState = usersAdapter.getInitialState()
 
 
 /* const usersSlice = createSlice({
@@ -54,25 +56,19 @@ const emptyUsers: User[] = []
 //This is the new variable from the mutated apiSlice.
 export const selectUsersResult = apiSliceWithUsers.endpoints.getUsers.select()
 
-export const selectAllUsers = createSelector(
+
+
+const selectUsersData = createSelector(
   selectUsersResult,
-  usersResult => usersResult?.data ?? emptyUsers
+  //Fall back to the empty entity state if no response yet.
+  result => result.data ?? initialState
 )
-
-export const selectUserById = createSelector(
-  selectAllUsers,
-  (state: RootState, userId: string) => userId,
-  (users, userId) => users.find(user => user.id === userId)
-)
-
-/* export const { } = usersSlice.actions
-export default usersSlice.reducer */
-
-
-/* export const { selectAll: selectAllUsers, selectById: selectUserById  } = usersAdapter.getSelectors((state: RootState) => state.users) */
 
 export const selectCurrentUser = (state: RootState) => {
   const currentUsername = selectCurrentUsername(state)
-  if (!currentUsername) return
-  return selectUserById(state, currentUsername!)
+  if (currentUsername) {
+    return selectUserById(state, currentUsername)
+  }
 }
+
+export const { selectAll: selectAllUsers, selectById: selectUserById } = usersAdapter.getSelectors(selectUsersData)
