@@ -1,7 +1,7 @@
 import { useAppDispatch } from "../../app/hooks"
 
 import type { Post, ReactionName } from "./postsSlice"
-import { reactionAdded } from "./postsSlice"
+import { useAddReactionMutation } from "../api/apiSlice"
 
 
 const reactionEmoji: Record<ReactionName, string> = {
@@ -17,7 +17,7 @@ type TReactionButtonsProps = {
 }
 
 const ReactionButtons = ({ post }: TReactionButtonsProps) => {
-  const dispatch = useAppDispatch()
+  const [addReaction] = useAddReactionMutation()
 
   const reactionButtons = Object.entries(reactionEmoji).map(
     ([stringName, emoji]) => {
@@ -27,7 +27,7 @@ const ReactionButtons = ({ post }: TReactionButtonsProps) => {
           key={reaction}
           aria-label={`React with ${reaction}`}
           onClick={() => {
-            dispatch(reactionAdded({ postId: post.id, reaction }))
+             addReaction({ postId: post.id, reaction })
           }}
         >
           {emoji} {post.reactions[reaction]}
