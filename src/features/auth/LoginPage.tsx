@@ -5,6 +5,7 @@ import { selectAllUsers } from '../users/usersSlice'
 
 import { login, selectCurrentUsername } from './authSlice'
 import { useEffect } from 'react'
+import { useGetUsersQuery } from '@/features/api/apiSlice'
 
 interface LoginPageFormFields extends HTMLFormControlsCollection {
   username: HTMLInputElement
@@ -16,7 +17,13 @@ interface LoginPageFormElement extends HTMLFormElement {
 
 const LoginPage = () => {
   const dispatch = useAppDispatch()
-  const users = useAppSelector(selectAllUsers)
+  const {
+    data: users = [],
+      isLoading,
+      isSuccess,
+      isError,
+      error,
+  } = useGetUsersQuery()
   const navigate = useNavigate()
   const currentUser = useAppSelector(selectCurrentUsername)
 
