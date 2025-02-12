@@ -42,16 +42,16 @@ export const apiSlice = createApi({
     getUsers: builder.query<User[], void>({
       query: () => '/users'
     }),
-    /* updateReaction: builder.mutation<Post, { postId: string, reaction: ReactionName }>({
+    addReaction: builder.mutation<Post, { postId: string, reaction: ReactionName }>({
       query: ({postId, reaction}) => ({
         url: `posts/${postId}/reactions`,
-        method: 'PATCH',
+        method: 'POST',
         body: { reaction },
       }),
       invalidatesTags: (result, error, arg) => [
         { type: 'Post', id: arg.postId }
       ]
-    }) */
+    })
   })
 })
 console.log("🚀 ~ apiSlice:", apiSlice)
@@ -62,5 +62,5 @@ export const {
   useGetUsersQuery,
   useAddNewPostMutation,
   useEditPostMutation,
-  /* useUpdateReactionMutation */
+  useAddReactionMutation
 } = apiSlice
