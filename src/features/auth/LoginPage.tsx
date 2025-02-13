@@ -1,11 +1,12 @@
 import { useNavigate } from 'react-router-dom'
 
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
-import { selectAllUsers } from '../users/usersSlice'
+import { selectAllUsers, User } from '../users/usersSlice'
 
 import { login, selectCurrentUsername } from './authSlice'
 import { useEffect } from 'react'
-import { useGetUsersQuery } from '@/features/api/apiSlice'
+import { useGetUsersQuery } from '@/features/users/usersSlice'
+import { Spinner } from '@/components/Spinner'
 
 interface LoginPageFormFields extends HTMLFormControlsCollection {
   username: HTMLInputElement
@@ -39,8 +40,12 @@ const LoginPage = () => {
       navigate('/posts')
     }
   }, [currentUser])
-  
-  const userOptions = users.map(user => (
+
+  if (isLoading) {
+    return <Spinner text="Loading..." />
+  }
+
+  const userOptions = Object.values(users.entities as User).map(user => (
     <option key={user.id} value={user.id}>
       {user.name}
     </option>
