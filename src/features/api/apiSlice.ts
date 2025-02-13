@@ -39,9 +39,9 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: (result, error, { id }) => [{ type: 'Post', id }]
     }),
-    getUsers: builder.query<User[], void>({
+    /* getUsers: builder.query<User[], void>({
       query: () => '/users'
-    }),
+    }), */
     addReaction: builder.mutation<Post, { postId: string, reaction: ReactionName }>({
       query: ({postId, reaction}) => ({
         url: `posts/${postId}/reactions`,
@@ -59,7 +59,7 @@ console.log("🚀 ~ apiSlice:", apiSlice)
 export const { 
   useGetPostsQuery,
   useGetPostQuery,
-  useGetUsersQuery,
+  //useGetUsersQuery,
   useAddNewPostMutation,
   useEditPostMutation,
   useAddReactionMutation
