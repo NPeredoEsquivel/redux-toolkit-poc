@@ -3,7 +3,12 @@ import { createSlice, createEntityAdapter, createAsyncThunk } from "@reduxjs/too
 import { createAppAsyncThunk } from "@/app/withTypes";
 import { client } from "@/api/client";
 
-import { RootState } from "@/app/store";
+import { RootState, AppThunk } from "@/app/store";
+
+import { forceGenerateNotifications } from "@/api/server";
+
+import { apiSlice } from "@/features/api/apiSlice";
+
 
 export interface ServerNotification {
   id: string;
@@ -77,3 +82,13 @@ export const selectUnreadNotificationsCount = (state: RootState) => {
 
   return unreadNotifications.length
 }
+
+export const apiSliceWithNotifications = apiSlice.injectEndpoints({
+  endpoints: builder => ({
+    getNotifications: builder.query<ServerNotification[], void>({
+      query: () => '/notifications',
+    }),
+  })
+})
+
+export const { useGetNotificationsQuery } = apiSliceWithNotifications
