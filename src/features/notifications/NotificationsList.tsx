@@ -6,12 +6,13 @@ import { TimeAgo } from '@/components/TimeAgo'
 
 import PostAuthor from '../posts/PostAuthor'
 
-import { allNotificationRead ,selectAllNotifications } from './notificationsSlice'
+import { allNotificationRead, useGetNotificationsQuery } from './notificationsSlice'
 
 
 const NotificationsList = () => {
   const dispatch = useAppDispatch()
-  const notifications = useAppSelector(selectAllNotifications)
+  //const notifications = useAppSelector(selectAllNotifications)
+  const { data: notifications = [] }  = useGetNotificationsQuery()
 
   useLayoutEffect(() => {
     dispatch(allNotificationRead())
@@ -19,7 +20,7 @@ const NotificationsList = () => {
 
   const renderedNotifications = notifications.map(notification => {
     const notificationClassname = classNames('notification', {
-      new: notification.isNew
+      //new: notification.isNew
     })
 
     return (
