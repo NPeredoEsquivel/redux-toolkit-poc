@@ -1,4 +1,4 @@
-import { createSlice, createEntityAdapter, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createEntityAdapter, createSelector } from "@reduxjs/toolkit";
 
 import { createAppAsyncThunk } from "@/app/withTypes";
 import { client } from "@/api/client";
@@ -23,18 +23,6 @@ export interface NotificationMetadata {
   isNew: boolean;
 }
 
-export const fetchNotifications = createAppAsyncThunk<ServerNotification[]>(
-  'notifications/fetchNotifications',
-  async (_unused, thunkApi) => {
-    /* const allNotifications = selectAllNotifications(thunkApi.getState()) as ServerNotification[]
-    const [latestNotification] = allNotifications
-    const latestTimestamp = latestNotification ? latestNotification.date : '' */
-    const response = await client.get<ServerNotification[]>(`/fakeApi/notifications`)
-    return response.data
-  }
-
-)
-
 /* const notificationsAdapter = createEntityAdapter<ClientNotification>({
   sortComparer: (a, b) => b.date.localeCompare(a.date)
 })*/
@@ -51,10 +39,10 @@ const notificationSlice = createSlice({
     allNotificationRead(state) {
       /* Object.values(state.entities).forEach(notification => {
         notification.read = true
-      }) */   
+      }) */
       Object.values(state.entities).forEach(metadata => {
         metadata.read = true
-      })   
+      })
     }
   },
   extraReducers: builder => {
@@ -72,7 +60,7 @@ const notificationSlice = createSlice({
           
           notificationsAdapter.upsertMany(state, notificationsWithMetadata)
           }) */
-   //Listen for the endpoint `matchFulfilled` actionwith `addMatcher`
+    //Listen for the endpoint `matchFulfilled` actionwith `addMatcher`
     builder.addMatcher(apiSliceWithNotifications.endpoints.getNotifications.matchFulfilled,
       (state, action) => {
         // Add client-side metadata for tracking new notifications
@@ -131,5 +119,31 @@ export const apiSliceWithNotifications = apiSlice.injectEndpoints({
     }),
   })
 })
+
+export const fetchNotifications = createAppAsyncThunk<ServerNotification[]>(
+  'notifications/fetchNotifications',
+  async (_unused, thunkApi) => {
+    /* const allNotifications = selectAllNotifications(thunkApi.getState()) as ServerNotification[]
+    const [latestNotification] = allNotifications
+    const latestTimestamp = latestNotification ? latestNotification.date : '' */
+    const response = await client.get<ServerNotification[]>(`/fakeApi/notifications`)
+    return response.data
+  }
+
+)
+
+const emptyNotifications: ServerNotification[] = []
+export const selectNotificationsResult = apiSliceWithNotifications.endpoints.getNotifications.select()
+
+const selectNotificationsData = createSelector(selectNotificationsResult, notificationsResult => notificationsResult.data ?? emptyNotifications)
+
+export const fetchNotificationsWebsocket = (): AppThunk => (_, getState) => {
+  const allNotifications = selectNotificationsData(getState())
+  const [latestNotification] = allNotifications
+  const latestTimestamp = latestNotification?.date ?? ''
+  //Hardcode a call to the mock server to simulate a server push scenario over websockets
+  forceGenerateNotifications(latestTimestamp)
+}
+
 
 export const { useGetNotificationsQuery } = apiSliceWithNotifications
