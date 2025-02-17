@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../app/hooks'
 import { logout } from '../features/auth/authSlice'
 import { selectCurrentUser } from '../features/users/usersSlice'
-import { /* fetchNotifications */fetchNotificationsWebsocket, selectUnreadNotificationsCount } from '@/features/notifications/notificationsSlice'
+import { /* fetchNotifications */fetchNotificationsWebsocket, selectUnreadNotificationsCount, useGetNotificationsQuery } from '@/features/notifications/notificationsSlice'
 
 import { UserIcon } from './UserIcon'
 import React from 'react'
@@ -16,6 +16,9 @@ export const Navbar = () => {
   const isLoggedIn = !!user
 
   let navContent: React.ReactNode = null
+
+  // Trigger initial fetch of notifications and keep the websocket open to receive updates
+  useGetNotificationsQuery()
 
   
   if (isLoggedIn) {
